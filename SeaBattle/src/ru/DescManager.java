@@ -12,7 +12,6 @@
 package ru;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
 public class DescManager {
@@ -23,6 +22,7 @@ public class DescManager {
     
     private final int gameBoardSize = 10;
     
+    //Подготовка игровой доски
     public void setupGameBoard () {
         
         cellsStatus = new int[gameBoardSize][gameBoardSize];
@@ -84,131 +84,141 @@ public class DescManager {
         }
     }
     
-    //Выбираем стартовую координату корабля
+    //Подбираем расположение корабля
     private void makeNewFirstCoordinate (int length) {
-        int cell, row;
+        int cell, row, randomSide;
+        boolean canPlace = false;
+        ArrayList<String> coords = new ArrayList<>();
         
-        cell = (int) (Math.random() * gameBoardSize);
-        row = (int) (Math.random() * gameBoardSize);
-        
-        if (cellsStatus[row][cell] == 0) {
-            
-            ArrayList<String> coords = new ArrayList<>();
-            //Вверх
-            if (row - length > 0) {
-                boolean canPlace = true;
-                
-                for (int i = 0; i < length; i++) {
-                    if (cellsStatus[row - i][cell] != 0)
-                        canPlace = false;
-                    
-                    coords.add("" + (row-i) + cell);
-                }
-                
-                if(canPlace) {
-                    ShipManager newShip = new ShipManager (length);
+        while (!canPlace) {
+            cell = (int) (Math.random() * gameBoardSize);
+            row = (int) (Math.random() * gameBoardSize);
+            randomSide = (int) (Math.random() * 4);
 
-                    newShip.setShipCoords(coords);
-                    
-                    coords.forEach((str) -> {
-                        changeCellStatus(str,1);
-                        changeCellStatus(str,2);
-                    });
-                
-                    
-                    shipsOnBoard.add(newShip);
-                }
-                
-                return;
-            }
-            //В право
-            if (cell + length < 10) {
-                boolean canPlace = true;
-                
-                for (int i = 0; i < length; i++) {
-                    if (cellsStatus[row][cell + i] != 0)
-                        canPlace = false;
-                    
-                    coords.add("" + row + (cell + i));
-                }
-                
-                if(canPlace) {
-                    ShipManager newShip = new ShipManager (length);
+            if (cellsStatus[row][cell] == 0) {
 
-                    newShip.setShipCoords(coords);
-                    
-                    coords.forEach((str) -> {
-                        changeCellStatus(str,1);
-                        changeCellStatus(str,2);
-                    });
-                    
-                    shipsOnBoard.add(newShip);
-                }
                 
-                return;
-            }
-            //Вниз
-            if (row + length < 10) {
-                boolean canPlace = true;
-                
-                for (int i = 0; i < length; i++) {
-                    if (cellsStatus[row + i][cell] != 0)
-                        canPlace = false;
-                    
-                    coords.add("" + (row+i) + cell);
-                }
-                
-                if(canPlace) {
-                    ShipManager newShip = new ShipManager (length);
 
-                    newShip.setShipCoords(coords);
-                    
-                    coords.forEach((str) -> {
-                        changeCellStatus(str,1);
-                        changeCellStatus(str,2);
-                    });
-                    
-                    shipsOnBoard.add(newShip);
-                }
-                
-                return;
-            }
-            //В лево
-            if (cell - length > 0) {
-                boolean canPlace = true;
-                
-                for (int i = 0; i < length; i++) {
-                    if (cellsStatus[row][cell - i] != 0)
-                        canPlace = false;
-                    
-                    coords.add("" + row + (cell - i));
-                }
-                
-                if(canPlace) {
-                    ShipManager newShip = new ShipManager (length);
+                switch (randomSide) {
+                    //Вверх
+                    case 0 : {
+                        coords.clear();
+                        if (row - length > 0) {
 
-                    newShip.setShipCoords(coords);
-                    
-                    coords.forEach((str) -> {
-                        changeCellStatus(str,1);
-                        changeCellStatus(str,2);
-                    });
-                    
-                    shipsOnBoard.add(newShip);
+                            for (int i = 0; i < length; i++) {
+                                if (cellsStatus[row - i][cell] == 0) {
+                                    coords.add("" + (row-i) + cell);
+                                }
+                            }
+                            
+                            if (coords.size() == length) {
+                                canPlace = true;
+                                break;
+                            }
+
+                        }
+                        break;
+                    }
+
+                //В право
+                    case 1 : {
+                        coords.clear();
+                        if (cell + length < 10) {
+
+                            for (int i = 0; i < length; i++) {
+                                if (cellsStatus[row][cell + i] == 0) {
+                                    coords.add("" + row + (cell + i));
+                                    
+                                }
+                            }
+
+                            if (coords.size() == length) {
+                                canPlace = true;
+                                break;
+                            }
+
+                        }
+                        break;
+                    }
+
+                //Вниз
+                    case 2 : {
+                        coords.clear();
+                        if (row + length < 10) {
+
+                            for (int i = 0; i < length; i++) {
+                                if (cellsStatus[row + i][cell] == 0) {
+                                    coords.add("" + (row+i) + cell); 
+                                    
+                                }
+                            }
+                            if (coords.size() == length) {
+                                canPlace = true;
+                                break;
+                            }
+
+                        }
+                        break;
+
+                        
+                    }
+
+                //В лево
+                    case 3 : {
+                        coords.clear();
+                        if (cell - length > 0) {
+
+                            for (int i = 0; i < length; i++) {
+                                if (cellsStatus[row][cell - i] == 0) {
+                                    coords.add("" + row + (cell - i));
+                                    
+                                }
+                            }
+                            if (coords.size() == length) {
+                                canPlace = true;
+                                break;
+                            }
+
+                        }
+                        break;
+                        }
+                    }
                 }
-                
-                return;
-            }
-            
-            
-            
-        } else {
-            makeNewFirstCoordinate(length);
+
         }
         
+        constructNewShip(length, coords);
         
     }    
+    
+    //Создаем корабль по выбранным координатам
+    public void constructNewShip (int length, ArrayList<String> coords) {
+        ShipManager newShip = new ShipManager (length);
 
+        newShip.setShipCoords(coords);
+
+        coords.forEach((str) -> {
+            changeCellStatus(str,1);
+            changeCellStatus(str,2);
+        });
+
+        shipsOnBoard.add(newShip);
+    }
+    
+    //Обновление игрового поля перед стартом игры
+    public void refreshGameBoard () {
+        for (int i = 0; i < gameBoardSize; i ++) {
+            for (int j = 0; j < gameBoardSize; j++) {
+                if(cellsStatus[i][j] != 1) {
+                    String coord = "" + i + j;
+                    changeCellStatus(coord, 0);
+                }
+                
+            }
+        }
+    }
+    
+    //Устанавливаем статус поля
     private void changeCellStatus (String coord, int status) {
         
         int bigCoord = Integer.parseInt(coord);
@@ -217,10 +227,6 @@ public class DescManager {
         int cell = (int) (bigCoord%10);
         
         switch (status) {
-            case 1 : {
-                cellsStatus[row][cell] = status;
-                break;
-            }
             
             case 2 : {
                 for (int i = -1 ; i <= 1 ; i++) {
@@ -233,12 +239,19 @@ public class DescManager {
                         }
                     }
                 }
+                break;
+            }
+            
+            default : {
+                cellsStatus[row][cell] = status;
+                break;
             }
 
         }
         
     }
     
+    //Вывод игрового поля на экран
     public void printGameBoard () {
         for (int i = 0; i < gameBoardSize; i++) {
             for (int j = 0; j < gameBoardSize; j ++)

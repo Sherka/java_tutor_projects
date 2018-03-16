@@ -15,6 +15,7 @@ public class GameClass {
         DescManager dm = new DescManager();
         dm.setupGameBoard();
         dm.addNewShips();
+        dm.refreshGameBoard();
         
         dm.printGameBoard();
         
