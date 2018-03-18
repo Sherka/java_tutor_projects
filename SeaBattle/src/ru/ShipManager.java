@@ -18,9 +18,11 @@ public class ShipManager {
     
    private int shipLength;
    private ArrayList<String> shipCoords = new ArrayList<String>();
+   private String shipName;
    
-   public ShipManager (int newShipLength) {
+   public ShipManager (int newShipLength, String sn) {
        setLength(newShipLength);
+       shipName = sn;
    }
    
    public void setLength (int l) {
@@ -31,14 +33,9 @@ public class ShipManager {
        return shipLength;
    }
    
-//   public String getStringCoord (int cell, int row) {
-//        
-//        String coord = "";
-//        
-//        coord += alphabet.charAt(cell) + (row + 1);
-//        
-//        return coord;
-//    }
+   public String getShipName () {
+       return shipName;
+   }
    
    public void setShipCoords (ArrayList<String> newCoords) {
        

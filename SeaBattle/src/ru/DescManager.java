@@ -22,6 +22,14 @@ public class DescManager {
     
     private final int gameBoardSize = 10;
     
+    public ArrayList<ShipManager> getShipsOnBoard() {
+        return shipsOnBoard;
+    }
+    
+    public int getShipsCount () {
+        return shipsOnBoard.size();
+    }
+    
     //Подготовка игровой доски
     public void setupGameBoard () {
         
@@ -50,32 +58,34 @@ public class DescManager {
     //Создаем все корабли и распологаем их на игровой доске
     public void addNewShips () {
         int counter = 4;
+        String newShipName;
+        
         while (counter != 0) {
             switch (counter) {
                 case 1 : {
                     for (int j = 0; j < 4; j++) {
-                        makeNewFirstCoordinate(counter);
+                        makeNewFirstCoordinate(counter, "Катер");
                     }
                     counter--;
                     break;
                 }
                 case 2 : {
                     for (int j = 0; j < 3; j++) {
-                        makeNewFirstCoordinate(counter);
+                        makeNewFirstCoordinate(counter, "Фрегат");
                     }
                     counter--;
                     break;
                 }
                 case 3 : {
                     for (int j = 0; j < 2; j++) {
-                        makeNewFirstCoordinate(counter);
+                        makeNewFirstCoordinate(counter, "Линкор");
                     }
                     counter--;
                     break;
                 }
                 case 4 : {
                     for (int j = 0; j < 1; j++) {
-                        makeNewFirstCoordinate(counter);
+                        makeNewFirstCoordinate(counter, "Линейный");
                     }
                     counter--;
                     break;
@@ -85,7 +95,8 @@ public class DescManager {
     }
     
     //Подбираем расположение корабля
-    private void makeNewFirstCoordinate (int length) {
+    private void makeNewFirstCoordinate (int length, String shipName) {
+        
         int cell, row, randomSide;
         boolean canPlace = false;
         ArrayList<String> coords = new ArrayList<>();
@@ -102,6 +113,7 @@ public class DescManager {
                 switch (randomSide) {
                     //Вверх
                     case 0 : {
+                        
                         coords.clear();
                         if (row - length > 0) {
 
@@ -187,13 +199,13 @@ public class DescManager {
 
         }
         
-        constructNewShip(length, coords);
+        constructNewShip(length, coords, shipName);
         
     }    
     
     //Создаем корабль по выбранным координатам
-    public void constructNewShip (int length, ArrayList<String> coords) {
-        ShipManager newShip = new ShipManager (length);
+    public void constructNewShip (int length, ArrayList<String> coords, String shipName) {
+        ShipManager newShip = new ShipManager (length, shipName);
 
         newShip.setShipCoords(coords);
 
@@ -254,11 +266,60 @@ public class DescManager {
     //Вывод игрового поля на экран
     public void printGameBoard () {
         for (int i = 0; i < gameBoardSize; i++) {
-            for (int j = 0; j < gameBoardSize; j ++)
+            for (int j = 0; j < gameBoardSize; j++)
                 System.out.print(cellsStatus[i][j] + " ");
             System.out.print("\n");
         }
         
         System.out.println("Всего: " + shipsOnBoard.size() + " кораблей");
+    }
+    
+    public int[] checkUserShoot (String userShoot) {
+        String alphabet = "abcdefghij";
+        boolean getShoot = false;
+        int[] shoot = new int[3];
+        
+        int cell = 0;
+        
+        for (int i = 0; i < alphabet.length(); i ++) {
+            if (userShoot.charAt(0) == alphabet.charAt(i))
+                cell = i;
+        }
+        
+        int row;
+        if(userShoot.length() == 2)
+            row = Integer.parseInt("" + userShoot.charAt(1)) - 1;
+        else
+            row = Integer.parseInt("" + userShoot.charAt(1) + userShoot.charAt(2)) - 1;
+        
+        String userCoord = "" + cell + row;
+        
+        for (int i = 0; i < shipsOnBoard.size(); i++)
+        {
+            ShipManager ship = shipsOnBoard.get(i);
+            ArrayList<String> shipCoords = ship.getShipCoords();
+            
+            if(shipCoords.contains(userCoord)) {
+                ship.getDamage(userCoord);
+                System.out.println("Попал");
+                getShoot = true;
+            }
+            
+            if(ship.getShipCoords().size() == 0) {
+                shipsOnBoard.remove(i);
+                System.out.println("Убил");
+            }
+                
+        }
+        
+        if (getShoot)
+            shoot[0] = 1;
+        else
+            shoot[0] = 0;
+        
+        shoot[1] = cell;
+        shoot[2] = row;
+        System.out.println("" + shoot[1] + shoot[2]);
+        return shoot;
     }
 }

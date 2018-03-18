@@ -2,84 +2,103 @@ package ru;
 
 import java.io.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 class InputController {
     
-    private static final String alphabet = "abdcefg";
-    private int gridLength = 7;
-    private int gridSize = 49;
-    private int[] grid = new int[gridSize];
-    private int comCount = 0;
-
-    String getUserInput(String msg) {
+    String alphabet = "abcdefghij";
     
-        String inputLine = null;
-        System.out.print(msg + " ");
+    public String userInputString () {
+        boolean rightCoord = false;
+        
+        BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
+        
+        String userString = "";
+        
         try {
-            BufferedReader is = new BufferedReader(new InputStreamReader(System.in));
-            inputLine = is.readLine();
-            if (inputLine.length() == 0) return null;
-        } catch (IOException e) {
-            System.out.println("IOException: " + e);
+            while (!rightCoord) {
+                userString = stdin.readLine();
+                rightCoord = checkUserInput(userString);
+            }
+                
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
         }
         
-        return inputLine.toLowerCase();
+        
+        
+        return userString;
     }
     
-    public ArrayList<String> placeDotCom(int comSize) {
+    private boolean checkUserInput (String userString) {
         
-        ArrayList<String> alphaCells = new ArrayList<String>();
-        String[] alphacoords = new String[comSize];
-        String temp = null;
-        int[] coords = new int[comSize];
-        int attempts = 0;
-        boolean success = false;
-        int location = 0;
+        boolean correctChar = false;
+        userString = userString.toLowerCase();
         
-        comCount++;
-        int incr = 1;
-        if((comCount%2) == 1) {
-            incr = gridLength;
+        if (userString.length() > 3 || userString.length() < 2) {
+            System.out.println("Не верные данные");
+            return false;
         }
         
-        while (!success && attempts++ < 200) {
+        char cell = userString.charAt(0);
         
-            location = (int) (Math.random() * gridSize);
-            
-            int x = 0;
-            success = true;
-            
-            while (success && x<comSize) {
-                if (grid[location] == 0) {
-                    coords[x++] = location;
-                    location += incr;
-                    if (location >= gridSize) {
-                        success = false;
-                    }
-                    if (x>0 && (location % gridLength == 0)) {
-                        success = false;
-                    }
-                } else {
-                    success = false;
-                }
+        if (userString.length() == 2) {
+            for (int i = 0; i < alphabet.length(); i++)
+                if (cell == alphabet.charAt(i))
+                    correctChar = true;
+
+            if (!correctChar) {
+                System.out.println("Не верно введена клетка");
+                return false;
+            }
+
+            int row;
+
+            try {
+                row = Integer.parseInt("" + userString.charAt(1));
+            } catch (Exception ex){
+                System.out.println("Неверно введен номер строки");
+                return false;
+            }
+
+            if(row < 1 || row > 10) {
+                System.out.println("Строка вне поля игры");
+                return false;
             }
         }
         
-        int x = 0;
-        int row = 0;
-        int column = 0;
-        
-        while (x < comSize) {
-            grid[coords[x]] = 1;
-            row = (int) (coords[x] / gridLength);
-            column = coords[x] % gridLength;
-            temp = String.valueOf(alphabet.charAt(row));
-            
-            alphaCells.add(temp.concat(Integer.toString(row)));
-            x++;
-        }
-        
-        return alphaCells;
-    }
+        if (userString.length() == 3) {
+            for (int i = 0; i < alphabet.length(); i++)
+                if (cell == alphabet.charAt(i))
+                    correctChar = true;
 
+            if (!correctChar) {
+                System.out.println("Не верно введена клетка");
+                return false;
+            }
+
+            int row;
+            String secondCoord = "" + userString.charAt(1) + userString.charAt(2);
+            
+            try {
+                row = Integer.parseInt("" + userString.charAt(1));
+            } catch (Exception ex){
+                System.out.println("Неверно введен номер строки");
+                return false;
+            }
+
+            if(row < 1 || row > 10) {
+                System.out.println("Строка вне поля игры");
+                return false;
+            }
+        }
+        return true;
+        
+    }
+    
+    public void idleInput() {
+        
+    }
+    
 }
